@@ -52,7 +52,7 @@ fi
 %endif
 
 %files
-%doc %{_docdir}/vcstool/README.rst
+/opt/ros/jazzy/*
 
 %changelog
 * Sun Dec 15 2024 Sebastian hayashi <microseyuyu@gmail.com> - 0.4.6-1
