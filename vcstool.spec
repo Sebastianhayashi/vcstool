@@ -17,6 +17,7 @@ Source0:        %{name}-%{version}.tar.gz
 BuildArch:      noarch
 
 BuildRequires:  python3-devel python3-setuptools
+BuildRequires:  ros-jazzy-ament-package
 Requires:       python3 PyYAML
 
 %description
