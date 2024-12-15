@@ -30,6 +30,18 @@ on multiple repositories. It supports batch commands for git, hg, svn, and bzr.
 # 修复 PYTHONPATH 环境变量
 export PYTHONPATH=/opt/ros/jazzy/lib/python3.11/site-packages:$PYTHONPATH
 
+# 修复 CMAKE_PREFIX_PATH 和 PKG_CONFIG_PATH
+export CMAKE_PREFIX_PATH=/opt/ros/jazzy
+export PKG_CONFIG_PATH=/opt/ros/jazzy/lib/pkgconfig
+
+# 输出环境变量以验证设置
+echo "PYTHONPATH: $PYTHONPATH"
+echo "CMAKE_PREFIX_PATH: $CMAKE_PREFIX_PATH"
+echo "PKG_CONFIG_PATH: $PKG_CONFIG_PATH"
+
+# 验证 ament_package 是否可用
+python3 -c "import ament_package" || { echo "ament_package not found"; exit 1; }
+
 # 使用 setuptools 构建
 python3 setup.py build
 
@@ -51,15 +63,14 @@ cp -p vcstool-completion/* %{buildroot}/opt/ros/jazzy/share/vcstool-completion/
 %if 0%{?with_tests}
 %check
 # 检查是否有测试存在
-if [ -d "tests" ]; then
-    pytest tests || echo "Tests failed"
+if [ -d "tests" ] || ls test_*.py *_test.py > /dev/null 2>&1; then
+    %__python3 -m pytest tests || echo "RPM TESTS FAILED"
 else
-    echo "No tests available, skipping."
+    echo "No tests to run, skipping."
 fi
 %endif
 
 %files
-%license LICENSE
 %doc /opt/ros/jazzy/share/doc/vcstool/README.rst
 
 /opt/ros/jazzy/bin/vcs
@@ -69,5 +80,5 @@ fi
 /opt/ros/jazzy/share/vcstool-completion/
 
 %changelog
-* Sun Dec 15 2024 Sebastian hayashi <microseyuyu@gmail.com> - 0.4.6-1
+* Sun Dec 15 2024 Sebastian Hayashi <microseyuyu@gmail.com> - 0.4.6-1
 - Initial RPM release of vcstool
