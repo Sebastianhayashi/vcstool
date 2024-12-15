@@ -34,12 +34,19 @@ export PYTHONPATH=/opt/ros/jazzy/lib/python3.11/site-packages:$PYTHONPATH
 python3 setup.py build
 
 %install
-# 安装 Python 包
-python3 setup.py install --root=%{buildroot} --prefix=%{_prefix} --install-lib=%{python3_sitelib}
+# 安装 Python 包到 /opt/ros/jazzy
+python3 setup.py install \
+    --root=%{buildroot} \
+    --prefix=/opt/ros/jazzy \
+    --install-lib=/opt/ros/jazzy/lib/python3.11/site-packages
 
 # 安装文档
-mkdir -p %{buildroot}%{_docdir}/vcstool
-cp -p README.rst %{buildroot}%{_docdir}/vcstool/
+mkdir -p %{buildroot}/opt/ros/jazzy/share/doc/vcstool
+cp -p README.rst %{buildroot}/opt/ros/jazzy/share/doc/vcstool/
+
+# 安装补全脚本
+mkdir -p %{buildroot}/opt/ros/jazzy/share/vcstool-completion/
+cp -p vcstool-completion/* %{buildroot}/opt/ros/jazzy/share/vcstool-completion/
 
 %if 0%{?with_tests}
 %check
@@ -52,7 +59,14 @@ fi
 %endif
 
 %files
-/opt/ros/jazzy/*
+%license LICENSE
+%doc /opt/ros/jazzy/share/doc/vcstool/README.rst
+
+/opt/ros/jazzy/bin/vcs
+/opt/ros/jazzy/bin/vcs-*
+/opt/ros/jazzy/lib/python3.11/site-packages/vcstool/
+/opt/ros/jazzy/lib/python3.11/site-packages/vcstool-*.egg-info/
+/opt/ros/jazzy/share/vcstool-completion/
 
 %changelog
 * Sun Dec 15 2024 Sebastian hayashi <microseyuyu@gmail.com> - 0.4.6-1
